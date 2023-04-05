@@ -5,12 +5,12 @@
 
 #### Retorna todas as categorias
 
-```http
+```
   GET /categories
 ```
 #### Retorna uma categoria
 
-```http
+```
   GET /categories/:id
 ```
 
@@ -20,7 +20,7 @@
 
 #### Cria uma nova categoria
 
-```http
+```
   POST /categories
 ```
 
@@ -30,7 +30,7 @@
 
 #### Atualiza uma categoria
 
-```http
+```
   PUT /categories/:id
 ```
 
@@ -41,7 +41,7 @@
 
 #### Exclui uma categoria
 
-```http
+```
   DELETE /categories/:id
 ```
 
@@ -51,7 +51,7 @@
 
 #### Retorna categorias com base no match com o nome
 
-```http
+```
   GET /categories/search/:name
 ```
 
@@ -61,7 +61,7 @@
 
 #### Cria várias categorias
 
-```http
+```
   POST /categories/multiple
 ```
 
@@ -74,12 +74,12 @@
 
 #### Retorna todos os produtos
 
-```http
+```
   GET /products
 ```
 #### Retorna todos os produtos
 
-```http
+```
   GET /products/:id
 ```
 
@@ -89,7 +89,7 @@
 
 #### Cria um novo produto
 
-```http
+```
   POST /products
 ```
 
@@ -104,7 +104,7 @@
 
 #### Atualiza um produto
 
-```http
+```
   PUT /products/:id
 ```
 
@@ -122,7 +122,7 @@ precisa de pelo menos um parametro junto com o id
 
 #### Exclui um produto
 
-```http
+```
   DELETE /products/:id
 ```
 
@@ -132,7 +132,7 @@ precisa de pelo menos um parametro junto com o id
 
 #### Retorna produtos com base no match com o nome
 
-```http
+```
   GET /products/search/:name
 ```
 
@@ -142,7 +142,7 @@ precisa de pelo menos um parametro junto com o id
 
 #### Cria vários produtos
 
-```http
+```
   POST /products/multiple
 ```
 
