@@ -179,14 +179,13 @@ describe('Valida funcionalidades da rota /products', () => {
         });
       });
 
-      it('retorna o código de status "400"', () => {
-        expect(response.status).to.be.equal(400);
+      it('retorna o código de status "404"', () => {
+        expect(response.status).to.be.equal(404);
       });
 
-      it('retorna um objeto e o valor da chave "message" informa os campos que estão faltando', () => {
+      it('retorna um objeto e o valor da chave "message" é igual a "Category not found"', () => {
         expect(response.body).to.be.an('object');
-        expect(response.body.message).to.include('Os seguintes campos são obrigatórios');
-        expect(response.body.message).to.include('categoryId');
+        expect(response.body.message).to.be.equal('Category not found');
       });
     });
 
@@ -239,11 +238,14 @@ describe('Valida funcionalidades da rota /products', () => {
         expect(response.body.message).to.include('description');
       });
     });
-    describe('Quando falta todos os campos', () => {
+    describe('Quando falta todos os campos exceto categoryId', () => {
       let response;
   
       beforeEach(async () => {
-        response = await supertest(app).post('/products').send({});
+        const { insertedId } = await db.collection('categories').insertOne({ name: 'Alimentos' });
+        response = await supertest(app).post('/products').send({
+          categoryId: insertedId,
+        });
       });
   
       it('retorna o código de status "400"', () => {
@@ -255,7 +257,6 @@ describe('Valida funcionalidades da rota /products', () => {
         expect(response.body.message).to.include('Os seguintes campos são obrigatórios');
           expect(response.body.message).to.include('name');
           expect(response.body.message).to.include('price');
-          expect(response.body.message).to.include('categoryId');
           expect(response.body.message).to.include('brand');
           expect(response.body.message).to.include('description');
       });
@@ -773,6 +774,107 @@ describe('Valida funcionalidades da rota /products', () => {
 
     it('o item do array possui a chave "category"', () => {
       expect(response.body[0]).to.have.property('category');
+    });
+  });
+
+  describe('Ao criar mutiplos produtos', () => {
+    let response;
+    let insertedCategory;
+
+    beforeEach(async () => {
+      insertedCategory = await db.collection('categories').insertOne({ name: 'Alimentos' });
+      response = await supertest(app).post('/products/multiple').send([
+        {
+          name: "Arroz Integral 5kg",
+          categoryId: insertedCategory.insertedId,
+          price: 5.99,
+          description: "Arroz integral de alta qualidade, 5kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Integral 1kg",
+          categoryId: insertedCategory.insertedId,
+          price: 2.99,
+          description: "Arroz integral de alta qualidade, 1kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Branco 5kg",
+          categoryId: insertedCategory.insertedId,
+          price: 5.99,
+          description: "Arroz branco de alta qualidade, 5kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Branco 1kg",
+          categoryId: insertedCategory.insertedId,
+          price: 2.99,
+          description: "Arroz branco de alta qualidade, 1kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+      ]);
+    });
+
+    it('retorna o código de status "201"', () => {
+      expect(response.status).to.be.equal(201);
+    });
+
+    it('retorna um objeto', () => {
+      expect(response.body).to.be.an('object');
+    });
+
+    it('o array possui 4 itens', () => {
+      expect(Object.keys(response.body)).to.have.lengthOf(4);
+    });
+  });
+
+  describe('Ao criar mutiplos produtos mas faltou campo ou categoria não existe', () => {
+    let response;
+    let insertedCategory;
+
+    beforeEach(async () => {
+      response = await supertest(app).post('/products/multiple').send([
+        {
+          name: "Arroz Integral 5kg",
+          categoryId: "5f5e5d5c5b5a595857565554",
+          price: 5.99,
+          description: "Arroz integral de alta qualidade, 5kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Integral 1kg",
+          categoryId: "5f5e5d5c5b5a595857565554",
+          price: 2.99,
+          description: "Arroz integral de alta qualidade, 1kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Branco 5kg",
+          price: 5.99,
+          description: "Arroz branco de alta qualidade, 5kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+        {
+          name: "Arroz Branco 1kg",
+          brand: "Arroz novo",
+          stock: 10
+        },
+      ]);
+    });
+
+    it('retorna o código de status "400"', () => {
+      expect(response.status).to.be.equal(400);
+    });
+
+    it('o valor da chave "message" é igual a "No valid products"', () => {
+      expect(response.body.message).to.be.equal('No valid products');
     });
   });
 });
