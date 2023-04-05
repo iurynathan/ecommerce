@@ -1,4 +1,30 @@
+## Instalação
 
+Configure as variáveis de ambiente no arquivo .env.
+
+```bash
+  MONGO_URI=<sua_string_de_conexão_com_o_mongodb>
+  PORT=<porta_para_a_API>
+```
+
+Caso use o docker para subir o mongoDB
+
+```bash
+  docker-compose up
+  docker exec -it mongodb_container mongosh
+  use <nome-da-collection>
+  use admin
+  db.auth(<user>, <password>)
+  db.createUser({ user: "meu_usuario_admin", pwd: "minha_senha", roles: ["dbAdmin"] })
+  db.grantRolesToUser("meu_usuario_admin", [{ role: "readWrite", db: "nome_do_banco_de_dados", collection: "nome_da_colecao" }])
+```
+Iniciando aplicação
+
+```bash
+  yarn ou npm install
+  yarn dev ou npm run dev
+```
+#
 ## Documentação da API
 
 ### Categorias
@@ -151,29 +177,3 @@ precisa de pelo menos um parametro junto com o id
 | `products`      | `Product[]` | **Obrigatório**. Lista de produtos |
 
 #
-## Instalação
-
-Configure as variáveis de ambiente no arquivo .env.
-
-```bash
-  MONGO_URI=<sua_string_de_conexão_com_o_mongodb>
-  PORT=<porta_para_a_API>
-```
-
-Caso use o docker para subir o mongoDB
-
-```bash
-  docker-compose up
-  docker exec -it mongodb_container mongosh
-  use <nome-da-collection>
-  use admin
-  db.auth(<user>, <password>)
-  db.createUser({ user: "meu_usuario_admin", pwd: "minha_senha", roles: ["dbAdmin"] })
-  db.grantRolesToUser("meu_usuario_admin", [{ role: "readWrite", db: "nome_do_banco_de_dados", collection: "nome_da_colecao" }])
-```
-Iniciando aplicação
-
-```bash
-  yarn ou npm install
-  yarn dev ou npm run dev
-```
