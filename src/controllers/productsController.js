@@ -12,6 +12,8 @@ const {
   findByNameProduct,
 } = require("../services/productService");
 const validateFields = require('../validators/productsValidators');
+const { getCategoryById } = require('../services/categoryService');
+const { hasValidCategory } = require('../validators/categoriesValidators');
 
 const handleGetAllProducts = async (_req, res) => {
   const products = await getAllProducts();
@@ -35,6 +37,9 @@ const handleCreateProduct = async (req, res) => {
   const productData = {};
   const validation = validateFields(req.body, expectedFields);
   const productExists = await findByNameProduct(req.body.name);
+  const categoryExists = await getCategoryById(req.body.categoryId);
+
+  if (!categoryExists) return res.status(statusCodes.NOT_FOUND).json({ message: 'Category not found' });
 
   if (productExists) return res.status(statusCodes.CONFLICT).json({ message: 'Product already exists' });
 
@@ -106,10 +111,19 @@ const handleCreateManyProducts = async (req, res) => {
   const productsData = req.body;
   const expectedFields = ['name', 'categoryId', 'price', 'description', 'brand', 'stock'];
 
-  const validProducts = productsData.filter(product => {
+  const validProductsAllFields = productsData.filter(product => {
     const validation = validateFields(product, expectedFields);
     return validation.success;
   });
+
+  const validProductsPromises = validProductsAllFields.map(hasValidCategory);
+  const validProductsResults = await Promise.all(validProductsPromises);
+
+  const validProducts = productsData.filter((_, index) => validProductsResults[index]);
+
+  if (validProducts.length === 0) {
+    return res.status(statusCodes.BAD_REQUEST).json({ message: 'No valid products' });
+  }
 
   const insertedIds = await createManyProducts(validProducts);
   return res.status(statusCodes.CREATED).json(insertedIds);
