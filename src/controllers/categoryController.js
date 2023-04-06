@@ -45,7 +45,7 @@ const handleUpdateCategoryById = async (req, res) => {
   const { name } = req.body;
 
   if (!name) return res.status(statusCodes.BAD_REQUEST).json({ message: '"name" is required' })
-  
+
   const categoryExists = await searchCategoryByName(name);
 
   if (categoryExists) return res.status(statusCodes.CONFLICT).json({ message: 'Category already exists' });;
@@ -59,11 +59,12 @@ const handleUpdateCategoryById = async (req, res) => {
 
 const handleDeleteCategoryById = async (req, res) => {
   const { id } = req.params;
+
+  if (await categoryIsInUse(id)) return res.status(statusCodes.BAD_REQUEST).json({ message: 'Category in use' });
+
   const category = await deleteCategoryById(id);
 
   if (!category) return res.status(statusCodes.NOT_FOUND).json({ message: 'Category not found' });
-  
-  if (await categoryIsInUse(id)) return res.status(statusCodes.BAD_REQUEST).json({ message: 'Category in use' });
 
   return res.status(statusCodes.NO_CONTENT).json();
 };
